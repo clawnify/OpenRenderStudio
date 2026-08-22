@@ -145,7 +145,7 @@ export function App() {
           <div className="size-7 rounded-lg bg-foreground flex items-center justify-center">
             <ImageIcon size={16} className="text-background" />
           </div>
-          <span className="font-semibold text-sm">Open Render Studio</span>
+          <span className="font-semibold text-sm">OpenRenderStudio</span>
         </div>
         <div className="flex items-center gap-3">
           {health && (

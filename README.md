@@ -2,7 +2,7 @@
 
 # OpenRenderStudio
 
-[![Deploy with Clawnify](https://app.clawnify.com/deploy-button.svg)](https://app.clawnify.com/deploy?repo=clawnify/open-render-studio)
+[![Deploy with Clawnify](https://app.clawnify.com/deploy-button.svg)](https://app.clawnify.com/deploy?repo=clawnify/OpenRenderStudio)
 
 AI staging & render editing for interior-design and archviz studios. Snap a room photo or drop in a CAD render, run one-click **directed edits** — restyle, material swap, furnish, declutter, relight, upscale, walkthrough video — and package the variants for a client. Built with **React + Tailwind CSS + Hono + D1**. Deploys to Cloudflare Workers via [Clawnify](https://clawnify.com).
 
@@ -30,7 +30,7 @@ Each tool is a preset directed edit against the source image. Add one by adding 
 ## Quickstart
 
 ```bash
-git clone https://github.com/clawnify/open-render-studio.git
+git clone https://github.com/clawnify/OpenRenderStudio.git
 cd open-render-studio
 pnpm install
 ```

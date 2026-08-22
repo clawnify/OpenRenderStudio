@@ -15,7 +15,7 @@ type Env = {
 };
 
 const app = createApp<Env>({
-  title: "Open Render Studio API",
+  title: "OpenRenderStudio API",
   version: "1.0.0",
   description: "Directed-edit render studio: stage, restyle, relight, enhance, and animate room images.",
 });

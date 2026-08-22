@@ -1,4 +1,4 @@
--- Open Render Studio — canonical schema.
+-- OpenRenderStudio — canonical schema.
 -- A project is a client engagement / room. Renders are the directed-edit runs
 -- against a source image (its variants ARE the proposal board). Assets are the
 -- studio's own reusable library (furniture pieces, house styles, materials)

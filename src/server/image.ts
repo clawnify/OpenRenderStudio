@@ -109,7 +109,7 @@ export async function editImage(
           Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "https://clawnify.com",
-          "X-Title": "Open Render Studio",
+          "X-Title": "OpenRenderStudio",
         },
         body: JSON.stringify(body),
       });
@@ -180,7 +180,7 @@ export async function startVideo(
       Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "https://clawnify.com",
-      "X-Title": "Open Render Studio",
+      "X-Title": "OpenRenderStudio",
     },
     body: JSON.stringify({
       model: opts.model || DEFAULT_VIDEO_MODEL,

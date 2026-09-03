@@ -138,7 +138,7 @@ export function App() {
   const selectedIsVideo = !!selected && /\.mp4($|\?)/.test(selected.url);
 
   return (
-    <div className="h-screen flex flex-col bg-background text-foreground">
+    <div className="h-dvh flex flex-col bg-background text-foreground">
       {/* Top bar */}
       <header className="h-14 shrink-0 border-b border-border bg-surface flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export function App() {
                   <span className="text-[11px] text-faint ml-1">editing from {selected.url === source ? "source" : selected.kind === "source" ? "source" : "this variant"}</span>
                 )}
                 {/* thumbnails */}
-                <div className="ml-auto flex items-center gap-2 overflow-x-auto max-w-[60%]">
+                <div className="ml-auto flex items-center gap-2 overflow-x-auto max-w-full sm:max-w-[60%]">
                   {strip.map((t) => {
                     const isSel = !!t.url && selected.url === t.url;
                     const cls = `shrink-0 size-12 rounded-lg overflow-hidden border-2 ${isSel ? "border-primary" : "border-border"}`;
@@ -258,7 +258,7 @@ export function App() {
         </section>
 
         {/* Tools rail */}
-        <aside className="min-h-0 border-l border-border bg-surface overflow-y-auto">
+        <aside className="min-h-0 border-t lg:border-t-0 lg:border-l border-border bg-surface overflow-y-auto">
           <div className="px-4 py-3 border-b border-border">
             <h2 className="text-sm font-semibold">Directed edits</h2>
             <p className="text-[11px] text-muted mt-0.5">Applied to the image in the canvas.</p>
@@ -292,7 +292,8 @@ export function App() {
 
       {/* Param panel */}
       {active && (
-        <div className="fixed inset-0 bg-black/30 flex items-end sm:items-center justify-center p-4" onClick={() => !busy && setActive(null)}>
+        <div className="fixed inset-0 overflow-y-auto bg-black/30" onClick={() => !busy && setActive(null)}>
+          <div className="flex min-h-full items-end justify-center p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:items-center">
           <div className="bg-surface rounded-2xl border border-border w-full max-w-md p-5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               {(() => {
@@ -348,6 +349,7 @@ export function App() {
                 {busy ? "Rendering…" : "Run"}
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}

@@ -140,22 +140,27 @@ export function App() {
   return (
     <div className="h-dvh flex flex-col bg-background text-foreground">
       {/* Top bar */}
-      <header className="h-14 shrink-0 border-b border-border bg-surface flex items-center justify-between px-4">
+      <header className="h-14 shrink-0 border-b border-border bg-card flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <div className="size-7 rounded-lg bg-foreground flex items-center justify-center">
-            <ImageIcon size={16} className="text-background" />
-          </div>
-          <span className="font-semibold text-sm">OpenRenderStudio</span>
+          <span className="app-icon size-7">
+            <ImageIcon size={16} />
+          </span>
+          <span className="text-[0.9375rem] font-semibold">OpenRenderStudio</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* A key that is set is a fact, not a signal: a quiet chip. A missing
+              one is what stops a render, so it reads as a warning badge. */}
           {health && (
-            <span className="text-[11px] text-muted">
-              key: <b className={health.openrouter ? "text-foreground" : "text-primary"}>{health.openrouter ? "connected" : "not set"}</b>
-            </span>
+            health.openrouter ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Key connected</span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning-tint px-2 py-0.5 text-xs font-medium text-warning">Key not set</span>
+            )
           )}
-          <label className="cursor-pointer flex items-center gap-1.5 rounded-lg bg-primary text-white text-sm px-3 py-1.5 hover:bg-primary-hover">
+          {/* The one ink action on this screen. */}
+          <label className="btn btn-primary cursor-pointer">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])} />
-            {uploading ? <Loader2 size={15} className="animate-spin" /> : <Upload size={15} />}
+            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
             {source ? "Replace" : "Upload room"}
           </label>
         </div>
@@ -164,10 +169,10 @@ export function App() {
       {/* Workspace: canvas + tools rail */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[1fr_300px]">
         {/* Canvas */}
-        <section className="min-h-0 flex flex-col bg-sunken">
+        <section className="min-h-0 flex flex-col bg-muted">
           <div className="flex-1 min-h-0 flex items-center justify-center p-6">
             {!selected ? (
-              <label className="cursor-pointer w-full max-w-xl rounded-2xl border-2 border-dashed border-border bg-surface flex flex-col items-center justify-center gap-3 py-24 text-muted hover:border-primary transition-colors">
+              <label className="cursor-pointer w-full max-w-xl rounded-md border border-dashed border-border bg-card flex flex-col items-center justify-center gap-3 py-24 text-muted-foreground transition-colors hover:border-accent">
                 <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])} />
                 {uploading ? <Loader2 className="animate-spin" /> : <Upload />}
                 <span className="text-sm">{uploading ? "Uploading…" : "Upload a room photo or CAD render to begin"}</span>
@@ -176,16 +181,16 @@ export function App() {
               <div className="relative max-h-full max-w-full">
                 {/* pills */}
                 <div className="absolute top-3 left-3 z-10 flex gap-2">
-                  <span className="rounded-full bg-surface/90 backdrop-blur px-3 py-1 text-xs font-medium shadow-sm">{selected.label}</span>
-                  {selected.sub && <span className="rounded-full bg-surface/90 backdrop-blur px-3 py-1 text-xs text-muted shadow-sm">{selected.sub}</span>}
+                  <span className="over-image font-medium">{selected.label}</span>
+                  {selected.sub && <span className="over-image text-muted-foreground">{selected.sub}</span>}
                 </div>
                 {selectedIsVideo ? (
-                  <video src={selected.url} controls className="max-h-[70vh] max-w-full rounded-xl shadow-lg" />
+                  <video src={selected.url} controls className="max-h-[70vh] max-w-full rounded-md shadow-float" />
                 ) : (
-                  <img src={selected.url} alt={selected.label} className="max-h-[70vh] max-w-full rounded-xl shadow-lg object-contain" />
+                  <img src={selected.url} alt={selected.label} className="max-h-[70vh] max-w-full rounded-md object-contain shadow-float" />
                 )}
                 {busy && (
-                  <div className="absolute inset-0 rounded-xl bg-black/40 flex items-center justify-center text-white gap-2 text-sm">
+                  <div className="absolute inset-0 rounded-md bg-black/40 flex items-center justify-center text-white gap-2 text-sm">
                     <Loader2 className="animate-spin" size={18} /> Rendering…
                   </div>
                 )}
@@ -195,44 +200,46 @@ export function App() {
 
           {/* Action bar + thumbnail strip */}
           {selected && (
-            <div className="shrink-0 border-t border-border bg-surface">
+            <div className="shrink-0 border-t border-border bg-card">
               {selected.disclaimer && (
-                <div className="px-4 pt-2 text-[11px] text-faint flex items-start gap-1.5">
+                <div className="px-4 pt-2 text-xs text-faint flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" /> {selected.disclaimer}
                 </div>
               )}
               <div className="flex items-center gap-2 px-4 py-2">
-                <a href={selected.url} download className="flex items-center gap-1.5 text-sm rounded-lg border border-border px-3 py-1.5 hover:bg-sunken">
-                  <Download size={15} /> Download
+                <a href={selected.url} download className="btn btn-secondary">
+                  <Download size={16} /> Download
                 </a>
                 {selected.kind === "render" && !selectedIsVideo && (
                   <button
                     onClick={() => setSource(selected.url)}
-                    className="flex items-center gap-1.5 text-sm rounded-lg border border-border px-3 py-1.5 hover:bg-sunken"
+                    className="btn btn-secondary"
                     title="Continue editing from this variant"
                   >
-                    <CornerUpLeft size={15} /> Use as source
+                    <CornerUpLeft size={16} /> Use as source
                   </button>
                 )}
                 {source && selected.url !== source && (
-                  <span className="text-[11px] text-faint ml-1">editing from {selected.url === source ? "source" : selected.kind === "source" ? "source" : "this variant"}</span>
+                  <span className="text-xs text-faint ml-1">editing from {selected.url === source ? "source" : selected.kind === "source" ? "source" : "this variant"}</span>
                 )}
                 {/* thumbnails */}
                 <div className="ml-auto flex items-center gap-2 overflow-x-auto max-w-full sm:max-w-[60%]">
                   {strip.map((t) => {
                     const isSel = !!t.url && selected.url === t.url;
-                    const cls = `shrink-0 size-12 rounded-lg overflow-hidden border-2 ${isSel ? "border-primary" : "border-border"}`;
+                    const cls = `shrink-0 size-12 overflow-hidden rounded-sm transition-shadow ${
+                      isSel ? "shadow-[inset_0_0_0_2px_var(--color-accent)]" : "shadow-edge"
+                    }`;
                     if (t.status === "pending") {
                       return (
-                        <div key={t.key} className={`${cls} bg-sunken flex items-center justify-center`} title={`${t.label} — rendering…`}>
-                          <Loader2 size={16} className="animate-spin text-muted" />
+                        <div key={t.key} className={`${cls} bg-muted flex items-center justify-center`} title={`${t.label} — rendering…`}>
+                          <Loader2 size={16} className="animate-spin text-muted-foreground" />
                         </div>
                       );
                     }
                     if (t.status === "error" || !t.url) {
                       return (
-                        <div key={t.key} className={`${cls} bg-sunken flex items-center justify-center`} title={`${t.label} — failed`}>
-                          <AlertTriangle size={15} className="text-primary" />
+                        <div key={t.key} className={`${cls} bg-muted flex items-center justify-center`} title={`${t.label} — failed`}>
+                          <AlertTriangle size={15} className="text-destructive" />
                         </div>
                       );
                     }
@@ -244,7 +251,7 @@ export function App() {
                         title={t.label}
                       >
                         {t.isVideo ? (
-                          <div className="size-full bg-foreground flex items-center justify-center"><Video size={16} className="text-background" /></div>
+                          <div className="size-full bg-muted flex items-center justify-center"><Video size={16} className="text-muted-foreground" /></div>
                         ) : (
                           <img src={t.url} alt={t.label} className="size-full object-cover" />
                         )}
@@ -258,14 +265,14 @@ export function App() {
         </section>
 
         {/* Tools rail */}
-        <aside className="min-h-0 border-t lg:border-t-0 lg:border-l border-border bg-surface overflow-y-auto">
+        <aside className="min-h-0 border-t lg:border-t-0 lg:border-l border-border bg-card overflow-y-auto">
           <div className="px-4 py-3 border-b border-border">
-            <h2 className="text-sm font-semibold">Directed edits</h2>
-            <p className="text-[11px] text-muted mt-0.5">Applied to the image in the canvas.</p>
+            <h2 className="card-title">Directed edits</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">Applied to the image in the canvas.</p>
           </div>
           {grouped.map(({ cat, items }) => (
             <div key={cat} className="px-2 py-2">
-              <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-faint">{CATEGORY_LABEL[cat]}</div>
+              <p className="px-2 pb-0.5 pt-1 text-[0.8125rem] font-medium text-muted-foreground">{CATEGORY_LABEL[cat]}</p>
               {items.map((tool) => {
                 const Icon = ICONS[tool.icon] ?? Sparkles;
                 const disabled = !selected;
@@ -275,12 +282,12 @@ export function App() {
                     disabled={disabled}
                     onClick={() => openTool(tool)}
                     title={tool.description}
-                    className="w-full flex items-start gap-2.5 rounded-lg px-2 py-2 text-left hover:bg-sunken disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-full flex items-start gap-2.5 rounded-sm px-2 py-2 text-left transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <Icon size={18} className="text-primary mt-0.5 shrink-0" />
+                    <Icon size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
                     <span className="min-w-0">
                       <span className="block text-sm font-medium">{tool.label}</span>
-                      <span className="block text-[11px] text-muted line-clamp-1">{tool.description}</span>
+                      <span className="block text-xs text-muted-foreground line-clamp-1">{tool.description}</span>
                     </span>
                   </button>
                 );
@@ -294,23 +301,23 @@ export function App() {
       {active && (
         <div className="fixed inset-0 overflow-y-auto bg-black/30" onClick={() => !busy && setActive(null)}>
           <div className="flex min-h-full items-end justify-center p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:items-center">
-          <div className="bg-surface rounded-2xl border border-border w-full max-w-md p-5" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md rounded-lg bg-card p-5 shadow-float" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               {(() => {
                 const Icon = ICONS[active.icon] ?? Sparkles;
-                return <Icon size={18} className="text-primary" />;
+                return <Icon size={16} className="text-muted-foreground" />;
               })()}
-              <h3 className="font-semibold">{active.label}</h3>
+              <h3 className="card-title">{active.label}</h3>
             </div>
-            <p className="text-sm text-muted mt-1">{active.description}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{active.description}</p>
 
             <div className="mt-4 space-y-3">
               {active.inputs.map((input) => (
                 <div key={input.name}>
-                  <label className="text-xs font-medium text-muted">{input.label}</label>
+                  <label className="text-[0.8125rem] font-medium text-muted-foreground">{input.label}</label>
                   {input.type === "select" ? (
                     <select
-                      className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                      className="input mt-1 text-sm"
                       value={params[input.name] ?? ""}
                       onChange={(e) => setParams((p) => ({ ...p, [input.name]: e.target.value }))}
                     >
@@ -320,7 +327,7 @@ export function App() {
                     </select>
                   ) : (
                     <input
-                      className="mt-1 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                      className="input mt-1 text-sm"
                       placeholder={input.placeholder}
                       value={params[input.name] ?? ""}
                       onChange={(e) => setParams((p) => ({ ...p, [input.name]: e.target.value }))}
@@ -328,24 +335,24 @@ export function App() {
                   )}
                 </div>
               ))}
-              {active.inputs.length === 0 && <p className="text-sm text-muted">No options — just run it.</p>}
+              {active.inputs.length === 0 && <p className="text-sm text-muted-foreground">No options — just run it.</p>}
             </div>
 
             {active.disclaimer && (
-              <p className="mt-3 text-[11px] text-faint flex gap-1.5">
+              <p className="mt-3 text-xs text-faint flex gap-1.5">
                 <AlertTriangle size={13} className="shrink-0 mt-0.5" />
                 {active.disclaimer}
               </p>
             )}
 
             <div className="mt-5 flex justify-end gap-2">
-              <button className="px-3 py-2 text-sm text-muted" onClick={() => !busy && setActive(null)}>Cancel</button>
+              <button className="btn btn-ghost" onClick={() => !busy && setActive(null)}>Cancel</button>
               <button
                 disabled={!canRun || busy}
                 onClick={runTool}
-                className="px-4 py-2 text-sm rounded-lg bg-primary text-white hover:bg-primary-hover disabled:opacity-50 flex items-center gap-2"
+                className="btn btn-primary"
               >
-                {busy && <Loader2 size={15} className="animate-spin" />}
+                {busy && <Loader2 size={16} className="animate-spin" />}
                 {busy ? "Rendering…" : "Run"}
               </button>
             </div>

@@ -46,6 +46,7 @@ export function App() {
   const [health, setHealth] = useState<{ openrouter: boolean; fal: boolean } | null>(null);
   const [source, setSource] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [renders, setRenders] = useState<Render[]>([]);
   const [selected, setSelected] = useState<Selected | null>(null);
   const [active, setActive] = useState<Tool | null>(null);
@@ -63,10 +64,13 @@ export function App() {
 
   async function onUpload(file: File) {
     setUploading(true);
+    setUploadError(null);
     try {
       const url = await api.upload(file);
       setSource(url);
       setSelected({ url, kind: "source", label: "Source" });
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Upload failed. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -123,7 +127,8 @@ export function App() {
     setTimeout(tick, 5000);
   }
 
-  const canRun = active?.inputs.every((i) => !i.required || (params[i.name] || "").trim().length > 0) ?? false;
+  const connected = !!health?.openrouter || (active?.id === "enhance" && !!health?.fal);
+  const canRun = connected && (active?.inputs.every((i) => !i.required || (params[i.name] || "").trim().length > 0) ?? false);
   const strip = [
     ...(source ? [{ key: "src", status: "source" as const, url: source, isVideo: false, label: "Source", disclaimer: null as string | null }] : []),
     ...renders.map((r) => ({
@@ -152,9 +157,9 @@ export function App() {
               one is what stops a render, so it reads as a warning badge. */}
           {health && (
             health.openrouter ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Key connected</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Image generation connected</span>
             ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-warning-tint px-2 py-0.5 text-xs font-medium text-warning">Key not set</span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning-tint px-2 py-0.5 text-xs font-medium text-warning">Image generation disconnected</span>
             )
           )}
           {/* The one ink action on this screen. */}
@@ -165,6 +170,8 @@ export function App() {
           </label>
         </div>
       </header>
+
+      {uploadError && <p role="alert" className="shrink-0 border-b border-border bg-warning-tint px-5 py-3 text-sm text-warning">{uploadError}</p>}
 
       {/* Workspace: canvas + tools rail */}
       <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[1fr_300px]">
@@ -344,6 +351,8 @@ export function App() {
                 {active.disclaimer}
               </p>
             )}
+
+            {!connected && <p className="mt-3 text-sm text-muted-foreground">Connect image generation to run this edit.</p>}
 
             <div className="mt-5 flex justify-end gap-2">
               <button className="btn btn-ghost" onClick={() => !busy && setActive(null)}>Cancel</button>

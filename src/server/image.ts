@@ -18,8 +18,8 @@ export type ImageEnv = {
 
 // Nano Banana lineage — Gemini image models on OpenRouter. Default is the fast
 // one; the Pro model is a drop-in for hero shots when quality matters more.
-export const DEFAULT_IMAGE_MODEL = "google/gemini-3.1-flash-image-preview";
-export const PRO_IMAGE_MODEL = "google/gemini-3-pro-image-preview";
+export const DEFAULT_IMAGE_MODEL = "google/gemini-3.1-flash-image";
+export const PRO_IMAGE_MODEL = "google/gemini-3-pro-image";
 
 // Image-to-video models on OpenRouter's async video API. Seedance is the fast
 // default; Veo 3.1 Fast trades a little speed for higher fidelity.
